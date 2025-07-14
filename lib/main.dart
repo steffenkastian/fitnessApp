@@ -1,0 +1,173 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+
+import 'package:my_fitness_app/models/uebungen.dart';
+import 'package:my_fitness_app/pages/zirkeltraining.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //  
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 51, 105, 56)),
+      ),
+      home: const MyHomePage(title: 'My Demo Home Page'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _countdown = 0;
+  Timer? _timer;
+  
+  Uebungen trainingGenerator = Uebungen();
+
+  int _currentIndex = 0;
+  List<List<dynamic>> workout = [];
+
+
+void _startCountdown() {
+  // Stoppe ggf. laufenden Timer
+  _timer?.cancel();
+
+    workout = trainingGenerator.createCircle(
+      numExercises: 5,
+      zeitBelastung: 40,
+      zeitPauseUebung: 15,
+      circleRunden: 2,
+    );
+  print(workout);
+
+
+  // Setze Trainingszustand zurück
+  setState(() {
+    _currentIndex = 0;
+    _countdown = workout[_currentIndex][1];
+  });
+
+  // Starte neuen Timer
+  _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    setState(() {
+      if (_countdown > 1) {
+        _countdown--;
+      } else {
+        if (_currentIndex < workout.length - 1) {
+          _currentIndex++;
+          _countdown = workout[_currentIndex][1];
+        } else {
+          timer.cancel(); // Training abgeschlossen
+        }
+      }
+    });
+  });
+}
+
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+      appBar: AppBar(
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // action in the IDE, or press "p" in the console), to see the
+          // wireframe for each widget.
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: _startCountdown,
+              child: const Text('Starte Training'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ZirkelTraining()),
+                );
+              },
+              child: const Text('Zirkel Training'),
+            ),
+            if (_countdown > 0) ... [
+              Text('Aktuelle Übung: ${workout[_currentIndex][0]}',style: const TextStyle(fontSize: 48, color: Color.fromARGB(255, 51, 2, 212)),),
+              Text('$_countdown s',style: const TextStyle(fontSize: 80, color: Color.fromARGB(255, 51, 2, 212),),),
+              if (_currentIndex+1 < workout.length) ...[
+                if (workout[_currentIndex+1][0]== "Pause") ...[
+                  Text('Nächste Übung: ${workout[_currentIndex+2][0]}',style: const TextStyle(fontSize: 48, color: Color.fromARGB(255, 51, 2, 212)),),     
+                ]           
+                else
+                  Text('Nächste Übung: ${workout[_currentIndex+1][0]}',style: const TextStyle(fontSize: 48, color: Color.fromARGB(255, 51, 2, 212)),),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
