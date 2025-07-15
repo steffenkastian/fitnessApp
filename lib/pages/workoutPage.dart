@@ -1,5 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+
+final player = AudioPlayer();
+
+void playSound(String fileName) {
+  player.play(AssetSource('sounds/$fileName'));
+}
 
 class WorkoutPage extends StatefulWidget {
   final List<List<dynamic>> workout;
@@ -28,6 +35,7 @@ class _WorkoutPageState extends State<WorkoutPage> {
       setState(() {
         if (_countdown > 1) {
           _countdown--;
+          if (_countdown<4)  playSound('mixkit-censorship-beep-1082.wav');
         } else {
           if (_currentIndex < widget.workout.length - 1) {
             _currentIndex++;
@@ -65,21 +73,22 @@ class _WorkoutPageState extends State<WorkoutPage> {
             const SizedBox(height: 16),
             Text(
               currentExercise,
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 32),
             Text(
-              'Verbleibende Zeit: $_countdown s',
-              style: const TextStyle(fontSize: 28, color: Colors.red),
+              '$_countdown s',
+              style: const TextStyle(fontSize: 100),
             ),
+            const SizedBox(height: 32),
             if (_currentIndex+1<widget.workout.length) ...[
               if (widget.workout[_currentIndex+1][0]=="Pause") ...[
-                Text('\n Nächste Übung: ${widget.workout[_currentIndex+2][0]}',
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
+                Text('Nächste Übung: ${widget.workout[_currentIndex+2][0]}',
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),),
               ]
               else
-                Text('\n Nächste Übung: ${widget.workout[_currentIndex+1][0]}',
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
+                Text('Nächste Übung: ${widget.workout[_currentIndex+1][0]}',
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),),
             ],
           ],
         ),

@@ -1,14 +1,43 @@
 @echo off
-set /p msg=Commit message: 
+setlocal
 
-if "%msg%"=="" (
-  echo Commit message darf nicht leer sein.
-  pause
-  exit /b 1
+echo *** Baue Flutter Web App...
+flutter build web --base-href /fitnessApp/
+echo Hello world
+if %errorlevel% neq 0 (
+    echo [FEHLER] Flutter Build fehlgeschlagen.
+    goto :wait
 )
 
+echo *** Entferne alten docs-Ordner (falls vorhanden)...
+rmdir /S /Q docs 2>nul
+
+echo *** Erstelle neuen docs-Ordner...
+mkdir docs
+
+echo *** Kopiere Web-Build nach docs/ ...
+xcopy /E /I /Y build\web\* docs\
+if %errorlevel% neq 0 (
+    echo [FEHLER] Kopieren nach docs fehlgeschlagen.
+    goto :wait
+)
+
+echo.
+set /p msg=Commit-Nachricht eingeben: 
+if "%msg%"=="" (
+    echo Commit-Nachricht darf nicht leer sein.
+    goto :wait
+)
+
+echo *** Führe Git-Befehle aus...
 git add .
 git commit -m "%msg%"
 git push origin main
 
-pause
+echo.
+echo *** Alles erledigt. Seite sollte bald unter https://steffenkastian.github.io/fitnessApp/ erreichbar sein.
+
+:wait
+echo.
+echo *** Drücke eine Taste, um das Fenster zu schließen...
+pause >nul
