@@ -12,6 +12,7 @@ class ZirkelTraining extends StatefulWidget {
 class _ZirkelTrainingState extends State<ZirkelTraining> {
   final _formKey = GlobalKey<FormState>();
 
+  final TextEditingController _warmupController= TextEditingController(text: "5");
   final TextEditingController _numExercisesController = TextEditingController(text: "16");
   final TextEditingController _belastungController = TextEditingController(text: "60");
   final TextEditingController _pauseController = TextEditingController(text: "0");
@@ -20,23 +21,26 @@ class _ZirkelTrainingState extends State<ZirkelTraining> {
   List<List<dynamic>> workout = [];
 
   List<List<dynamic>> _generateWorkout() {
+    final int zeitWarmup = int.tryParse(_warmupController.text) ?? 0;
     final int numExercises = int.tryParse(_numExercisesController.text) ?? 0;
     final int zeitBelastung = int.tryParse(_belastungController.text) ?? 0;
     final int zeitPause = int.tryParse(_pauseController.text) ?? 0;
     final int runden = int.tryParse(_rundenController.text) ?? 0;
 
-    List<List<dynamic>> workout = [];
+    List<List<Object>> workout = [];
+    List<List<Object>> workout2 = [];
 
     Uebungen trainingGenerator = Uebungen();
 
-    int _currentIndex = 0;
-
-    workout = trainingGenerator.createCircle(
+    workout = trainingGenerator.createWarmup(zeitWarmup).map((e) => e.cast<Object>()).toList();
+    workout2 = trainingGenerator.createCircle(
       numExercises: numExercises,
       zeitBelastung: zeitBelastung,
       zeitPauseUebung: zeitPause,
       circleRunden: runden,
-    );
+    ).map((e) => e.cast<Object>()).toList();
+
+    workout.addAll(workout2);
 
     print(workout);
     return workout;
@@ -54,6 +58,11 @@ class _ZirkelTrainingState extends State<ZirkelTraining> {
           key: _formKey,
           child: ListView(
             children: [
+              TextFormField(
+                controller: _warmupController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Übungen Warmup'),
+              ),
               TextFormField(
                 controller: _numExercisesController,
                 keyboardType: TextInputType.number,

@@ -2,7 +2,6 @@
 setlocal
 
 echo *** Baue Flutter Web App...
-flutter build web --base-href /fitnessApp/
 echo Hello world
 if %errorlevel% neq 0 (
     echo [FEHLER] Flutter Build fehlgeschlagen.

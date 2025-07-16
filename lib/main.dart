@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Steffens Fitness',
       theme: ThemeData(
         // This is the theme of your application.
         //  
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 51, 105, 56)),
       ),
-      home: const MyHomePage(title: 'My Demo Home Page'),
+      home: const MyHomePage(title: 'Steffens Fitness App'),
     );
   }
 }
@@ -67,42 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<dynamic>> workout = [];
 
 
-void _startCountdown() {
-  // Stoppe ggf. laufenden Timer
-  _timer?.cancel();
-
-    workout = trainingGenerator.createCircle(
-      numExercises: 5,
-      zeitBelastung: 40,
-      zeitPauseUebung: 15,
-      circleRunden: 2,
-    );
-  print(workout);
-
-
-  // Setze Trainingszustand zurück
-  setState(() {
-    _currentIndex = 0;
-    _countdown = workout[_currentIndex][1];
-  });
-
-  // Starte neuen Timer
-  _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-    setState(() {
-      if (_countdown > 1) {
-        _countdown--;
-      } else {
-        if (_currentIndex < workout.length - 1) {
-          _currentIndex++;
-          _countdown = workout[_currentIndex][1];
-        } else {
-          timer.cancel(); // Training abgeschlossen
-        }
-      }
-    });
-  });
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -126,25 +90,8 @@ void _startCountdown() {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: _startCountdown,
-              child: const Text('Starte Training'),
-            ),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
