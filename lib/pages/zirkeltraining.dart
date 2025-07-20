@@ -12,39 +12,45 @@ class ZirkelTraining extends StatefulWidget {
 class _ZirkelTrainingState extends State<ZirkelTraining> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _warmupController= TextEditingController(text: "5");
+  final TextEditingController _warmupController = TextEditingController(text: "5");
   final TextEditingController _numExercisesController = TextEditingController(text: "16");
   final TextEditingController _belastungController = TextEditingController(text: "60");
   final TextEditingController _pauseController = TextEditingController(text: "0");
   final TextEditingController _rundenController = TextEditingController(text: "3");
 
-  List<List<dynamic>> workout = [];
+  List<List<Object>> workout = [];
 
-  List<List<dynamic>> _generateWorkout() {
+  void _generateWorkout() {
     final int zeitWarmup = int.tryParse(_warmupController.text) ?? 0;
     final int numExercises = int.tryParse(_numExercisesController.text) ?? 0;
     final int zeitBelastung = int.tryParse(_belastungController.text) ?? 0;
     final int zeitPause = int.tryParse(_pauseController.text) ?? 0;
     final int runden = int.tryParse(_rundenController.text) ?? 0;
 
-    List<List<Object>> workout = [];
-    List<List<Object>> workout2 = [];
+    final Uebungen trainingGenerator = Uebungen();
 
-    Uebungen trainingGenerator = Uebungen();
-
-    workout = trainingGenerator.createWarmup(zeitWarmup).map((e) => e.cast<Object>()).toList();
-    workout2 = trainingGenerator.createCircle(
+    final warmup = trainingGenerator.createWarmup(zeitWarmup).map((e) => e.cast<Object>()).toList();
+    final hauptteil = trainingGenerator.createCircle(
       numExercises: numExercises,
       zeitBelastung: zeitBelastung,
       zeitPauseUebung: zeitPause,
       circleRunden: runden,
     ).map((e) => e.cast<Object>()).toList();
 
-    workout.addAll(workout2);
+    setState(() {
+      workout = [...warmup, ...hauptteil];
+    });
+  }
 
-    print(workout);
-    return workout;
-    }
+  void _startWorkout() {
+    if (workout.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WorkoutPage(workout: workout),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,20 +91,20 @@ class _ZirkelTrainingState extends State<ZirkelTraining> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  final tempWorkout = _generateWorkout();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WorkoutPage(workout: tempWorkout),
-                    ),
-                  );
-                },
+                onPressed: _generateWorkout,
                 child: const Text('Workout erstellen'),
               ),
-              const SizedBox(height: 20),
-              if (workout.isNotEmpty) const Text("Dein Workout:", style: TextStyle(fontSize: 18)),
-              ...workout.map((entry) => Text('${entry[0]} – ${entry[1]} Sekunden')),
+              if (workout.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _startWorkout,
+                  child: const Text('Workout starten'),
+                ),
+                const Text("Dein Workout:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                ...workout.map((entry) => Text('• ${entry[0]} – ${entry[1]} s')),
+                const SizedBox(height: 20),
+              ],
             ],
           ),
         ),
