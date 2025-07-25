@@ -5,15 +5,26 @@ import 'package:my_fitness_app/models/uebungen.dart';
 import 'package:my_fitness_app/pages/zirkeltraining.dart';
 import 'auth_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // wird bei Firebase-Setup generiert
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // .env Datei laden
+  await dotenv.load(fileName: ".env");
+
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform, // <- das ist wichtig!
+    options: FirebaseOptions(
+      apiKey: dotenv.env['API_KEY']!,
+      appId: dotenv.env['APP_ID']!,
+      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
+      projectId: dotenv.env['PROJECT_ID']!,
+    ),
   );
+  
   runApp(const MyApp());
 }
 
