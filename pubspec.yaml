@@ -58,6 +58,7 @@ dev_dependencies:
 flutter:
   assets: 
     - assets/sounds/mixkit-censorship-beep-1082.wav
+    - assets/.env
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
