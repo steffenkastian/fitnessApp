@@ -3,10 +3,20 @@ import 'dart:async';
 
 import 'package:my_fitness_app/models/uebungen.dart';
 import 'package:my_fitness_app/pages/zirkeltraining.dart';
+import 'auth_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // wird bei Firebase-Setup generiert
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform, // <- das ist wichtig!
+  );
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,24 +27,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Steffens Fitness',
       theme: ThemeData(
-        // This is the theme of your application.
-        //  
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 51, 105, 56)),
       ),
       home: const MyHomePage(title: 'Steffens Fitness App'),
+//      home: const AuthPage(),
     );
   }
 }
@@ -58,24 +54,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _countdown = 0;
-  Timer? _timer;
+  final int _countdown = 0;
   
   Uebungen trainingGenerator = Uebungen();
 
-  int _currentIndex = 0;
+  final int _currentIndex = 0;
   List<List<dynamic>> workout = [];
 
 
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
@@ -92,6 +82,20 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            if (user != null) ... [
+              Text('Angemeldet als: ${user.email}'),
+              ElevatedButton(onPressed: () {logout; setState(() { });}, child: const Text("Logout")),
+            ] else ... [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AuthPage()),
+                  );
+                },
+                child: const Text('Login'),
+              ),
+            ],
             ElevatedButton(
               onPressed: () {
                 Navigator.push(

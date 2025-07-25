@@ -62,37 +62,73 @@ class _WorkoutPageState extends State<WorkoutPage> {
       appBar: AppBar(
         title: const Text('Workout läuft'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Aktuelle Übung:',
-              style: Theme.of(context).textTheme.headlineSmall,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Aktuelle Übung:',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            '$currentExercise',
+                            style: const TextStyle(
+                              fontSize: 60,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            '$_countdown s',
+                            style: const TextStyle(fontSize: 100),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        if (_currentIndex + 1 < widget.workout.length)
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'Nächste Übung: ${_getNextExerciseName()}',
+                              style: const TextStyle(
+                                  fontSize: 32, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              currentExercise,
-              style: const TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              '$_countdown s',
-              style: const TextStyle(fontSize: 100),
-            ),
-            const SizedBox(height: 32),
-            if (_currentIndex+1<widget.workout.length) ...[
-              if (widget.workout[_currentIndex+1][0]=="Pause") ...[
-                Text('Nächste Übung: ${widget.workout[_currentIndex+2][0]}',
-                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),),
-              ]
-              else
-                Text('Nächste Übung: ${widget.workout[_currentIndex+1][0]}',
-                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),),
-            ],
-          ],
-        ),
+          );
+        },
       ),
     );
+  }
+
+
+  String _getNextExerciseName() {
+    if (_currentIndex + 2 < widget.workout.length &&
+        widget.workout[_currentIndex + 1][0] == "Pause") {
+      return widget.workout[_currentIndex + 2][0];
+    }
+    return widget.workout[_currentIndex + 1][0];
   }
 }
