@@ -15,16 +15,20 @@ void main() async {
 
 
   // .env Datei laden
-  await dotenv.load(fileName: ".env");
+//  await dotenv.load(fileName: ".env");
 
   await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: dotenv.env['API_KEY']!,
-      appId: dotenv.env['APP_ID']!,
-      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
-      projectId: dotenv.env['PROJECT_ID']!,
-    ),
+    options: DefaultFirebaseOptions.currentPlatform,
   );
+
+//  await Firebase.initializeApp(
+//    options: FirebaseOptions(
+//      apiKey: dotenv.env['API_KEY']!,
+//      appId: dotenv.env['APP_ID']!,
+//      messagingSenderId: dotenv.env['MESSAGING_SENDER_ID']!,
+//      projectId: dotenv.env['PROJECT_ID']!,
+//    ),
+//  );
 
   runApp(const MyApp());
 }
