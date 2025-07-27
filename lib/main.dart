@@ -13,6 +13,7 @@ import 'firebase_options.dart'; // wird bei Firebase-Setup generiert
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+
   // .env Datei laden
   await dotenv.load(fileName: ".env");
 
@@ -24,7 +25,7 @@ void main() async {
       projectId: dotenv.env['PROJECT_ID']!,
     ),
   );
-  
+
   runApp(const MyApp());
 }
 

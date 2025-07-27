@@ -2,6 +2,8 @@
 setlocal
 
 echo *** Erst flutter build web    ausführen ***
+pause >nul
+
 echo *** Baue Flutter Web App...
 echo Hello world
 if %errorlevel% neq 0 (
