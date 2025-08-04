@@ -2,19 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-import 'dart:js' as js;
-
-void keepScreenOn() {
-  js.context.callMethod('eval', ["""
-    if ('wakeLock' in navigator) {
-      navigator.wakeLock.request('screen').catch((err) => {
-        console.error('Wake Lock error:', err);
-      });
-    } else {
-      console.warn('Wake Lock API not supported.');
-    }
-  """]);
-}
 
 final player = AudioPlayer();
 
@@ -41,7 +28,6 @@ class _WorkoutPageState extends State<WorkoutPage> {
     super.initState();
     _currentIndex = 0;
     _countdown = widget.workout[_currentIndex][1];
-    keepScreenOn();
     _startTimer();
   }
 
